@@ -61,3 +61,21 @@ resource "aws_security_group" "http_access" {
         }
     
 }
+
+resource "null_resource" "check_docker_version" {
+    depends_on = [aws_instance.example]
+
+    connection {
+        type        = "ssh"
+        user        = "ec2-user"
+        private_key = file("./secretKeyFile.pem")
+        host        = aws_instance.example.public_ip
+        timeout     = "3m"
+    }
+
+    provisioner "remote-exec" {
+        inline = [
+            "docker version"
+        ]
+    }
+}
