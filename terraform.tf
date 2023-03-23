@@ -16,12 +16,6 @@ resource "aws_instance" "example" {
                 sudo yum install docker -y
                 sudo usermod -aG docker ec2-user
                 sudo service docker start
-                sudo yum install ruby -y
-                sudo yum install wget
-                wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install
-                chmod +x ./install
-                sudo ./install auto
-                sudo service codedeploy-agent status
                 EOF
 
     
@@ -29,4 +23,41 @@ resource "aws_instance" "example" {
     tags = {
         Name = "env-stage"
     }
+}
+
+resource "aws_security_group" "http_access" {
+    name        = "http_access"
+    description = "Allow HTTP inbound traffic"
+    egress  {
+            cidr_blocks         = [ "0.0.0.0/0", ]
+            description         = ""
+            from_port           = 0
+            ipv6_cidr_blocks    = []
+            prefix_list_ids     = []
+            protocol            = "-1"
+            security_groups     = []
+            self                = false
+            to_port             = 0
+        }
+    
+    ingress  {
+        description = "HTTP access"
+        from_port   = 80
+        to_port     = 80
+        protocol    = "tcp"
+        cidr_blocks =  ["0.0.0.0/0"]    
+    }
+    
+    ingress {
+            cidr_blocks         = [ "0.0.0.0/0", ]
+            description         = "SSH access"
+            from_port           = 22
+            ipv6_cidr_blocks    = []
+            prefix_list_ids     = []
+            protocol            = "tcp"
+            security_groups     = []
+            self                = false
+            to_port             = 22
+        }
+    
 }
