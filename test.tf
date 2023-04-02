@@ -6,7 +6,7 @@ resource "aws_instance" "example" {
     ami                     = "ami-005f9685cb30f234b"
     instance_type           = "t2.micro"
     key_name                = "secretKeyFile"
-
+    iam_instance_profile    = aws_iam_instance_profile.ec2-cd-role.name
     security_groups  = [aws_security_group.http_access.name]
 
 
@@ -68,23 +68,46 @@ resource "aws_security_group" "http_access" {
     
 }
 
-resource "null_resource" "check_docker_version" {
-    depends_on = [aws_instance.example]
+data "aws_iam_policy_document" "codedeploy-policy" {
+    statement {
+    effect = "Allow"
 
-    connection {
-        type        = "ssh"
-        user        = "ec2-user"
-        private_key = file("./secretKeyFile.pem")
-        host        = aws_instance.example.public_ip
-        timeout     = "3m"
+    principals {
+      type        = "Service"
+      identifiers = ["codedeploy.us-east-1.amazonaws.com"]
     }
 
-    provisioner "remote-exec" {
-        inline = [
-            "docker version"
-        ]
-    }
+    actions = ["sts:AssumeRole"]
+  }
+}
+
+resource "aws_iam_role" "code-deploy-role" {
+    name = "code-deploy-role"
+    assume_role_policy = data.aws_iam_policy_document.codedeploy-policy.json
+}
+
+resource "aws_iam_policy_attachment" "AmazonEC2RoleforAWSCodeDeploy" {
+    name        = "AmazonEC2RoleforAWSCodeDeploy"
+    policy_arn  = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy"
+    roles       = [aws_iam_role.code-deploy-role.name]
+}
+
+resource "aws_iam_instance_profile" "ec2-cd-role" {
+    name = "ec2-cd-role"
+    role = aws_iam_role.code-deploy-role.name
 }
 
 
+resource "aws_codedeploy_app" "example" {
+  name = "example-app"
+}
 
+resource "aws_sns_topic" "example" {
+  name = "example-topic"
+}
+
+resource "aws_codedeploy_deployment_group" "example" {
+  app_name              = aws_codedeploy_app.example.name
+  deployment_group_name = "example-group"
+  service_role_arn      = aws_iam_role.code-deploy-role.arn
+  }
