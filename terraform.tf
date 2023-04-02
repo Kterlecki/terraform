@@ -6,8 +6,8 @@ resource "aws_instance" "example" {
     ami                     = "ami-005f9685cb30f234b"
     instance_type           = "t2.micro"
     key_name                = "secretKeyFile"
-
-    security_groups  = [aws_security_group.http_access.name]
+    iam_instance_profile    = aws_iam_instance_profile.ec2-codedeploy-role.name
+    security_groups         = [aws_security_group.http_access.name]
 
 
     user_data = <<-EOF
@@ -88,9 +88,13 @@ resource "aws_iam_role" "codedeploy-role" {
 resource "aws_iam_policy_attachment" "AmazonEC2RoleForAwsCodeDeploy" {
     name        = "AmazonEC2RoleForAwsCodeDeploy"
     policy_arn  = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy"
-    roles       = [aws_iam_role.code-deploy-role.name] 
+    roles       = [aws_iam_role.codedeploy-role.name] 
 }
 
+resource "aws_iam_instance_profile" "ec2-codedeploy-role" {
+    name = "ec2-codedeploy-role"
+    role = aws_iam_role.code-deploy-role.name
+}
 resource "aws_codeploy_app" "test-app" {
     name    = "test-app"
 }
@@ -119,7 +123,8 @@ resource "null_resource" "check_docker_version" {
 
     provisioner "remote-exec" {
         inline = [
-            "docker version"
+            "docker version",
+            "sudo service codedeploy-agent status"
         ]
     }
 }
