@@ -85,6 +85,20 @@ resource "aws_iam_policy_attachment" "AmazonEC2RoleForAwsCodeDeploy" {
     roles       = [aws_iam_role.code-deploy-role.name] 
 }
 
+resource "aws_codeploy_app" "test-app" {
+    name    = "test-app"
+}
+
+resource "aws_sns_topic" "test-topic" {
+    name    = "test-topic"
+}
+
+resource "aws_codedeploy_deployment_group" "name" {
+    app_name = aws_codedeploy_app.test-app.name
+    deployment_group_name = "test-group"
+    service_role_arn = aws_iam_role.codedeploy-role.arn
+}
+
 
 resource "null_resource" "check_docker_version" {
     depends_on = [aws_instance.example]
