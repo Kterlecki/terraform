@@ -16,6 +16,12 @@ resource "aws_instance" "example" {
                 sudo yum install docker -y
                 sudo usermod -aG docker ec2-user
                 sudo service docker start
+                sudo yum install ruby -y
+                sudo yum install wget
+                wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install
+                chmod +x ./install
+                sudo ./install auto
+                sudo service codedeploy-agent status
                 EOF
 
     
