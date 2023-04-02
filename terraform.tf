@@ -62,6 +62,30 @@ resource "aws_security_group" "http_access" {
     
 }
 
+data "aws_iam_policy_document" "codedeploy-policy" {
+    statement {
+      effect        = "Allow"
+    }
+    principals {
+        type        = "Service"
+        identifiers = ["codedeploy.us-east-1.amazonaws.com"]
+    }
+
+    actions         = ["sts:AssumeRole"]
+}
+
+resource "aws_iam_role" "codedeploy-role" {
+    name                = "codedeploy-role"
+    assume_role_policy  = data.aws_iam_policy_document.codedeploy-policy.json
+}
+
+resource "aws_iam_policy_attachment" "AmazonEC2RoleForAwsCodeDeploy" {
+    name        = "AmazonEC2RoleForAwsCodeDeploy"
+    policy_arn  = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy"
+    roles       = [aws_iam_role.code-deploy-role.name] 
+}
+
+
 resource "null_resource" "check_docker_version" {
     depends_on = [aws_instance.example]
 
