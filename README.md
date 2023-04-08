@@ -6,3 +6,7 @@ Terraform script to create Ec2 instance, create IAM policy and role and attach t
 `terraform init`
 `terraform apply`
 `terraform destroy`
+
+
+## You need a SecretFile.pem to SSH into Ec2 instance
+### You can generate one in AWS
