@@ -71,13 +71,13 @@ resource "aws_security_group" "http_access" {
 data "aws_iam_policy_document" "codedeploy-policy" {
     statement {
       effect        = "Allow"
-    }
     principals {
         type        = "Service"
         identifiers = ["codedeploy.us-east-1.amazonaws.com"]
     }
 
     actions         = ["sts:AssumeRole"]
+    }
 }
 
 resource "aws_iam_role" "codedeploy-role" {
@@ -93,9 +93,9 @@ resource "aws_iam_policy_attachment" "AmazonEC2RoleForAwsCodeDeploy" {
 
 resource "aws_iam_instance_profile" "ec2-codedeploy-role" {
     name = "ec2-codedeploy-role"
-    role = aws_iam_role.code-deploy-role.name
+    role = aws_iam_role.codedeploy-role.name
 }
-resource "aws_codeploy_app" "test-app" {
+resource "aws_codedeploy_app" "test-app" {
     name    = "test-app"
 }
 

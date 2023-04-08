@@ -354,3 +354,5 @@ MigrationBackup/
 .terraform
 *.tfstate
 *.tfstate.backup
+*lock.hcl
+*.pem
