@@ -9,7 +9,6 @@ resource "aws_instance" "example" {
     iam_instance_profile    = aws_iam_instance_profile.ec2-codedeploy-role.name
     security_groups         = [aws_security_group.http_access.name]
 
-
     user_data = <<-EOF
                 #!/bin/bash
                 sudo yum update -y
@@ -22,10 +21,11 @@ resource "aws_instance" "example" {
                 chmod +x ./install
                 sudo ./install auto
                 wait
-                docker version > /home/ec2-user/docker_version.txt
-                sudo service codedeploy-agent status > /home/ec2-user/codedeploy_version.txt
+                echo "Docker Version " > /home/ec2-user/docker_version.txt
+                echo "CodeDeploy agent Status " > /home/ec2-user/codedeploy_version.txt
+                sudo docker version >> /home/ec2-user/docker_version.txt
+                sudo service codedeploy-agent status >> /home/ec2-user/codedeploy_version.txt
                 EOF
-
     
     user_data_replace_on_change = true
     tags = {
@@ -126,6 +126,7 @@ resource "null_resource" "check_docker_version" {
 
     provisioner "remote-exec" {
         inline = [
+            "while [ ! -f /home/ec2-user/docker_version.txt ] || [ ! -f /home/ec2-user/codedeploy_version.txt ]; do sleep 10; done",
             "cat docker_version.txt",
             "cat codedeploy_version.txt"  
         ]
