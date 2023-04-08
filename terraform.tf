@@ -9,7 +9,6 @@ resource "aws_instance" "example" {
     iam_instance_profile    = aws_iam_instance_profile.ec2-codedeploy-role.name
     security_groups         = [aws_security_group.http_access.name]
 
-
     user_data = <<-EOF
                 #!/bin/bash
                 sudo yum update -y
@@ -21,9 +20,12 @@ resource "aws_instance" "example" {
                 wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install
                 chmod +x ./install
                 sudo ./install auto
-                sudo service codedeploy-agent status
+                wait
+                echo "Docker Version " > /home/ec2-user/docker_version.txt
+                echo "CodeDeploy agent Status " > /home/ec2-user/codedeploy_version.txt
+                sudo docker version >> /home/ec2-user/docker_version.txt
+                sudo service codedeploy-agent status >> /home/ec2-user/codedeploy_version.txt
                 EOF
-
     
     user_data_replace_on_change = true
     tags = {
@@ -71,13 +73,13 @@ resource "aws_security_group" "http_access" {
 data "aws_iam_policy_document" "codedeploy-policy" {
     statement {
       effect        = "Allow"
-    }
     principals {
         type        = "Service"
         identifiers = ["codedeploy.us-east-1.amazonaws.com"]
     }
 
     actions         = ["sts:AssumeRole"]
+    }
 }
 
 resource "aws_iam_role" "codedeploy-role" {
@@ -93,9 +95,9 @@ resource "aws_iam_policy_attachment" "AmazonEC2RoleForAwsCodeDeploy" {
 
 resource "aws_iam_instance_profile" "ec2-codedeploy-role" {
     name = "ec2-codedeploy-role"
-    role = aws_iam_role.code-deploy-role.name
+    role = aws_iam_role.codedeploy-role.name
 }
-resource "aws_codeploy_app" "test-app" {
+resource "aws_codedeploy_app" "test-app" {
     name    = "test-app"
 }
 
@@ -119,12 +121,14 @@ resource "null_resource" "check_docker_version" {
         private_key = file("./secretKeyFile.pem")
         host        = aws_instance.example.public_ip
         timeout     = "3m"
+        
     }
 
     provisioner "remote-exec" {
         inline = [
-            "docker version",
-            "sudo service codedeploy-agent status"
+            "while [ ! -f /home/ec2-user/docker_version.txt ] || [ ! -f /home/ec2-user/codedeploy_version.txt ]; do sleep 10; done",
+            "cat docker_version.txt",
+            "cat codedeploy_version.txt"  
         ]
     }
 }
