@@ -21,7 +21,6 @@ resource "aws_instance" "example" {
                 wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install
                 chmod +x ./install
                 sudo ./install auto
-                sudo service codedeploy-agent status
                 EOF
 
     
@@ -110,7 +109,7 @@ resource "aws_codedeploy_deployment_group" "name" {
 }
 
 
-resource "null_resource" "check_docker_version" {
+/* resource "null_resource" "check_docker_version" {
     depends_on = [aws_instance.example]
 
     connection {
@@ -119,12 +118,25 @@ resource "null_resource" "check_docker_version" {
         private_key = file("./secretKeyFile.pem")
         host        = aws_instance.example.public_ip
         timeout     = "3m"
+        
     }
 
     provisioner "remote-exec" {
         inline = [
-            "docker version",
-            "sudo service codedeploy-agent status"
+            
+                #!/bin/bash
+                "sudo yum update -y",
+                "sudo yum install docker -y",
+                "sudo usermod -aG docker ec2-user",
+                "sudo service docker start",
+                "sudo yum install ruby -y",
+                "sudo yum install wget",
+                "wget https://aws-codedeploy-us-east-1.s3.amazonaws.com/latest/install",
+                "chmod +x ./install",
+                "sudo ./install auto",
+                "sudo service codedeploy-agent status",
+                "docker version"
+                
         ]
     }
-}
+} */
