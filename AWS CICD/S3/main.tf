@@ -16,7 +16,7 @@ resource "aws_iam_role" "artifact_s3_role" {
   })
 }
 
-resource "aws_iam_policy" "policy" {
+resource "aws_iam_policy" "artifact_bucket_iam_policy" {
   name        = "artifact_s3_policy"
   description = "CICD S3 policy"
 
@@ -59,12 +59,12 @@ resource "aws_iam_policy" "policy" {
   })
 }
 
+# Artifact Bucket ##
 resource "aws_s3_bucket" "artifact_bucket" {
-  bucket = cicd-artifact-bucket
-  name = "artifact_bucket"
+  bucket = "artifact-bucket"
 }
 
-resource "aws_s3_bucket_policy" "artifact_bucket" {
+resource "aws_s3_bucket_policy" "artifact_bucket_policy" {
   bucket = aws_s3_bucket.artifact_bucket.id
   policy = data.aws_iam_policy_document.artifact_bucket_policy_doc.json
 }
@@ -116,3 +116,28 @@ resource "aws_s3_bucket_versioning" "artifact_bucket_versioning" {
     status = "Enabled"
   }
 }
+
+### CICD bucket
+
+resource "aws_s3_bucket" "codepipeline_bucket" {
+  bucket =  "cicd-artifact-bucket"
+  force_destroy = true
+  tags = {
+    Name        = "My bucket"
+    Environment = "Dev"
+  }
+}
+resource "aws_s3_bucket_public_access_block" "codepipeline_bucket_access" {
+  bucket = aws_s3_bucket.codepipeline_bucket.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_policy" "codepipeline_bucket_policy" {
+  bucket = aws_s3_bucket.codepipeline_bucket.id
+  policy = data.aws_iam_policy_document.codepipeline_bucket_policy_doc
+}
+  
