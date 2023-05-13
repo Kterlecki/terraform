@@ -1,5 +1,67 @@
+resource "aws_iam_role" "artifact_s3_role" {
+  name = "artifact_bucket_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "s3.amazonaws.com"
+        }
+      },
+    ]
+  })
+}
+
+resource "aws_iam_policy" "policy" {
+  name        = "artifact_s3_policy"
+  description = "CICD S3 policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "s3:GetReplicationConfiguration",
+          "s3:ListBucket"
+        ],
+        Effect   = "Allow"
+        Resource = [
+          "${aws_s3_bucket.codePipeline.arn}"
+        ]
+      },
+      {
+        Action = [
+          "s3:GetObjectVersionForReplication",
+          "s3:GetObjectVersionAcl",
+          "s3:GetObjectVersionTagging"
+        ],
+        Effect = "Allow"
+        Resource = [
+          "${aws_s3_bucket.codepipeline_bucket.arn}/*"
+        ]
+      },
+      {
+        Action = [
+          "s3:ReplicateObject",
+          "s3:ReplicateDelete",
+          "s3:ReplicateTags"
+        ],
+        Effect = "Allow",
+        Resource =  [
+          "${aws_s3_bucket.artifact_bucket.arn}/*"
+        ]
+      }
+    ]
+  })
+}
+
 resource "aws_s3_bucket" "artifact_bucket" {
   bucket = cicd-artifact-bucket
+  name = "artifact_bucket"
 }
 
 resource "aws_s3_bucket_policy" "artifact_bucket" {
