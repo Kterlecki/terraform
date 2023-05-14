@@ -83,7 +83,7 @@ data "aws_iam_policy_document" "artifact_bucket_policy_doc"{
   statement {
     principals {
       type = "AWS"
-      identifiers = [var.var.codepipeline_role_arn]
+      identifiers = [var.codepipeline_role_arn]
     }
 
     actions = [ 
@@ -141,3 +141,38 @@ resource "aws_s3_bucket_policy" "codepipeline_bucket_policy" {
   policy = data.aws_iam_policy_document.codepipeline_bucket_policy_doc
 }
   
+data "aws_iam_policy_document" "codepipeline_bucket_policy_doc"{
+  statement {
+    principals {
+      type = "AWS"
+      identifiers = [var.codepipeline_role_arn]
+    }
+
+    actions = [ 
+      "s3:Get*",
+      "s3:List*",
+      "s3:ReplicateObject",
+      "s3:PutObject",
+      "s3:RestoreObject",
+      "s3:PutObjectVersionTagging",
+      "s3:PutObjectTagging",
+      "s3:PutObjectAcl"
+     ]
+     resources = [ 
+      aws_s3_bucket.codepipeline_bucket.arn,
+      "${aws_s3_bucket.codepipeline_bucket.arn}/*",
+      ]
+  }
+}
+
+resource "aws_s3_bucket_acl" "codepipeline_bucket_acl" {
+  bucket = aws_s3_bucket.codepipeline_bucket.id
+  acl = "private"
+}
+
+resource "aws_s3_bucket_versioning" "codepipeline_bucket_versioning" {
+  bucket = aws_s3_bucket.codepipeline_bucket.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
