@@ -11,4 +11,13 @@ resource "aws_codebuild_project" "codebuild_project" {
     image = "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
     image_pull_credentials_type = "CODEBUILD"
   }
+  logs_config {
+    cloudwatch_logs {
+      status = "ENABLED"
+    }
+  }
+  source {
+    type = "GITHUB"
+    location = "https://github.com/Kterlecki/AWS-CICD"
+  }
 }
