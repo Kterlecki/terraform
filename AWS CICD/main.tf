@@ -39,3 +39,16 @@ module "codepipeline_iam_role" {
   }
   
 }
+
+module "codepipeline_terraform" {
+  depends_on = [ 
+    module.codebuild_terraform,
+    module.artifact_bucket
+   ]
+   source = "./modules/codepipeline"
+
+   project_name = "test_project_module_pip"
+   s3_bucket_name = module.artifact_bucket.bucket
+   codepipeline_role_arn = module.codepipeline_iam_role.role_arn
+
+}
