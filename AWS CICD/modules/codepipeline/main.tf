@@ -36,8 +36,25 @@ resource "aws_codepipeline" "terraform_pipeline" {
       input_artifacts = [ "source_output" ]
       output_artifacts = [ "build_output" ]
       version = "1"
+      run_order = 2
       configuration = {
         ProjectName = "hello-world"
+      }
+    }
+  }
+
+  stage {
+    name = "Deploy"
+    action {
+      name = "Deploy"
+      category = "Deploy"
+      owner = "AWS"
+      provider = "CodeDeploy"
+      input_artifacts = [ "build_output" ]
+      version = "1"
+      configuration = {
+        ApplicationName = "hello-world-s3"
+        DeploymentGroupName = "hello-world-s3-dg"
       }
     }
   }
