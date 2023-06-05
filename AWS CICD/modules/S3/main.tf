@@ -30,7 +30,7 @@ resource "aws_iam_policy" "artifact_bucket_iam_policy" {
         ],
         Effect   = "Allow"
         Resource = [
-          "${aws_s3_bucket.codePipeline.arn}"
+          "${aws_s3_bucket.codepipeline_bucket.arn}"
         ]
       },
       {
@@ -51,9 +51,8 @@ resource "aws_iam_policy" "artifact_bucket_iam_policy" {
           "s3:ReplicateTags"
         ],
         Effect = "Allow",
-        Resource =  [
-          "${aws_s3_bucket.artifact_bucket.arn}/*"
-        ]
+        Resource = "${aws_s3_bucket.artifact_bucket.arn}/*"
+        
       }
     ]
   })

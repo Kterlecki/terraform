@@ -1,9 +1,9 @@
 resource "aws_codebuild_project" "codebuild_project" {
-  name = "coebuild_project"
+  name = "codebuild_project"
   service_role = var.role_arn
-  tags = "terraform_codebuild_tag"
+  /* tags = "terraform_codebuild_tag" */
   artifacts {
-    type = CODEPIPELINE
+    type = "CODEPIPELINE"
   }
   environment {
     type = "LINUX_CONTAINER"

@@ -8,6 +8,6 @@ output "id" {
 }
 
 output "name" {
-  value       = aws_codebuild_project.terraform_codebuild_project[*].name
-  description = "List of Names of the CodeBuild projects"
+  value       = aws_codebuild_project.codebuild_project.name
+  description = "Name of the CodeBuild projects"
 }
