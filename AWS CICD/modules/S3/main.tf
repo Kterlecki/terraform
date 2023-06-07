@@ -175,3 +175,18 @@ resource "aws_s3_bucket_versioning" "codepipeline_bucket_versioning" {
     status = "Enabled"
   }
 }
+
+resource "aws_s3_bucket_public_access_block" "codepipeline_bucket_access" {
+  bucket = aws_s3_bucket.codepipeline-bucket-84543422.id
+  ignore_public_acls = true
+  restrict_public_buckets = true
+  block_public_acls = true
+  block_public_policy = true
+}
+resource "aws_s3_bucket_public_access_block" "artifact_bucket_access" {
+  bucket = aws_s3_bucket.artifact-bucket-84543422.id
+  ignore_public_acls = true
+  restrict_public_buckets = true
+  block_public_acls = true
+  block_public_policy = true
+}
