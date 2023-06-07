@@ -165,6 +165,7 @@ data "aws_iam_policy_document" "codepipeline_bucket_policy_doc"{
 }
 
 resource "aws_s3_bucket_acl" "codepipeline_bucket_acl" {
+  depends_on = [ aws_s3_bucket_ownership_controls.codepipeline_bucket_controls ]
   bucket = aws_s3_bucket.codepipeline-bucket-84543422.id
   acl = "private"
 }
@@ -176,17 +177,15 @@ resource "aws_s3_bucket_versioning" "codepipeline_bucket_versioning" {
   }
 }
 
-resource "aws_s3_bucket_public_access_block" "codepipeline_bucket_access" {
+resource "aws_s3_bucket_ownership_controls" "codepipeline_bucket_controls" {
   bucket = aws_s3_bucket.codepipeline-bucket-84543422.id
-  ignore_public_acls = true
-  restrict_public_buckets = true
-  block_public_acls = true
-  block_public_policy = true
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
 }
-resource "aws_s3_bucket_public_access_block" "artifact_bucket_access" {
+resource "aws_s3_bucket_ownership_controls" "artifact_bucket_controls" {
   bucket = aws_s3_bucket.artifact-bucket-84543422.id
-  ignore_public_acls = true
-  restrict_public_buckets = true
-  block_public_acls = true
-  block_public_policy = true
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
 }

@@ -1,10 +1,10 @@
-resource "aws_codepipeline" "terraform_pipeline" {
-  name = "terraform_pipeline"
+resource "aws_codepipeline" "terraform-pipeline" {
+  name = "terraform-pipeline"
   role_arn = var.codepipeline_role_arn
   /* tags = "codepipeline_tag" */
 
   artifact_store {
-    location = "module.artifact_bucket.bucket"
+    location = var.s3_bucket_name
     type = "S3"
 
   }
@@ -12,7 +12,7 @@ resource "aws_codepipeline" "terraform_pipeline" {
   stage {
     name = "Source"
     action {
-      name = "Download source"
+      name = "Download-source"
       category = "Source"
       owner = "AWS"
       version = "1"
@@ -29,7 +29,7 @@ resource "aws_codepipeline" "terraform_pipeline" {
   stage {
     name = "Build"
     action {
-      name = "Build"
+      name = "Action-Build"
       category = "Build"
       owner = "AWS"
       provider = "CodeBuild"
@@ -46,7 +46,7 @@ resource "aws_codepipeline" "terraform_pipeline" {
   stage {
     name = "Deploy"
     action {
-      name = "Deploy"
+      name = "Action-Deploy"
       category = "Deploy"
       owner = "AWS"
       provider = "CodeDeploy"
