@@ -17,7 +17,7 @@ resource "aws_codebuild_project" "codebuild_project" {
     }
   }
   source {
-    type = "GITHUB"
+    type = "CODEPIPELINE"
     location = "https://github.com/Kterlecki/AWS-CICD"
   }
 }
