@@ -1,0 +1,1 @@
+project_name = "tf-cicd-aws-services"
