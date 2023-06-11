@@ -13,6 +13,7 @@ Creates an auto scaling group which ensures a number of EC2 are running and depe
 `terraform apply`
 `terraform destroy`
 
-
+# Terraform AWS CICD
+- Creates AWS CI/CD pipeline using AWS CodeBuild, AWS CodeDeploy, AWS CodePipeline
 ## SecretKey
 You need a SecretFile.pem to SSH into Ec2 instance. You can generate one in AWS. 
