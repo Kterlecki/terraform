@@ -1,6 +1,6 @@
 variable "codepipeline_role_arn" {
-    description = "ARN of codePipeline IAM role"
-    type        = string
+  description = "ARN of codePipeline IAM role"
+  type        = string
 }
 
 variable "project_name" {

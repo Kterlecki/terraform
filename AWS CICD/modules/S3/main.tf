@@ -28,7 +28,7 @@ resource "aws_iam_policy" "artifact_bucket_iam_policy" {
           "s3:GetReplicationConfiguration",
           "s3:ListBucket"
         ],
-        Effect   = "Allow"
+        Effect = "Allow"
         Resource = [
           "${aws_s3_bucket.codepipeline-bucket-84543422.arn}"
         ]
@@ -50,9 +50,9 @@ resource "aws_iam_policy" "artifact_bucket_iam_policy" {
           "s3:ReplicateDelete",
           "s3:ReplicateTags"
         ],
-        Effect = "Allow",
+        Effect   = "Allow",
         Resource = "${aws_s3_bucket.artifact-bucket-84543422.arn}/*"
-        
+
       }
     ]
   })
@@ -69,23 +69,23 @@ resource "aws_s3_bucket_policy" "artifact_bucket_policy" {
 }
 
 resource "aws_s3_bucket_public_access_block" "artifact_bucket_access" {
-  provider = aws.cloud
-  bucket = aws_s3_bucket.artifact-bucket-84543422.id
-  ignore_public_acls = true
+  provider                = aws.cloud
+  bucket                  = aws_s3_bucket.artifact-bucket-84543422.id
+  ignore_public_acls      = true
   restrict_public_buckets = true
-  block_public_acls = true
-  block_public_policy = true
+  block_public_acls       = true
+  block_public_policy     = true
 }
 
-data "aws_iam_policy_document" "artifact_bucket_policy_doc"{
+data "aws_iam_policy_document" "artifact_bucket_policy_doc" {
   provider = aws.cloud
   statement {
     principals {
-      type = "AWS"
+      type        = "AWS"
       identifiers = [var.codepipeline_role_arn]
     }
 
-    actions = [ 
+    actions = [
       "s3:Get*",
       "s3:List*",
       "s3:ReplicateObject",
@@ -94,23 +94,23 @@ data "aws_iam_policy_document" "artifact_bucket_policy_doc"{
       "s3:PutObjectVersionTagging",
       "s3:PutObjectTagging",
       "s3:PutObjectAcl"
-     ]
-     resources = [ 
+    ]
+    resources = [
       aws_s3_bucket.artifact-bucket-84543422.arn,
       "${aws_s3_bucket.artifact-bucket-84543422.arn}/*",
-      ]
+    ]
   }
 }
 
 resource "aws_s3_bucket_acl" "artifact_bucket_acl" {
   provider = aws.cloud
-  bucket = aws_s3_bucket.artifact-bucket-84543422.id
-  acl = "private"
+  bucket   = aws_s3_bucket.artifact-bucket-84543422.id
+  acl      = "private"
 }
 
 resource "aws_s3_bucket_versioning" "artifact_bucket_versioning" {
   provider = aws.cloud
-  bucket = aws_s3_bucket.artifact-bucket-84543422.id
+  bucket   = aws_s3_bucket.artifact-bucket-84543422.id
   versioning_configuration {
     status = "Enabled"
   }
@@ -119,7 +119,7 @@ resource "aws_s3_bucket_versioning" "artifact_bucket_versioning" {
 ### CICD bucket
 
 resource "aws_s3_bucket" "codepipeline-bucket-84543422" {
-  bucket =  "cicd-artifact-bucket-84543422"
+  bucket        = "cicd-artifact-bucket-84543422"
   force_destroy = true
   tags = {
     Name        = "My bucket"
@@ -139,15 +139,15 @@ resource "aws_s3_bucket_policy" "codepipeline_bucket_policy" {
   bucket = aws_s3_bucket.codepipeline-bucket-84543422.id
   policy = data.aws_iam_policy_document.codepipeline_bucket_policy_doc.json
 }
-  
-data "aws_iam_policy_document" "codepipeline_bucket_policy_doc"{
+
+data "aws_iam_policy_document" "codepipeline_bucket_policy_doc" {
   statement {
     principals {
-      type = "AWS"
+      type        = "AWS"
       identifiers = [var.codepipeline_role_arn]
     }
 
-    actions = [ 
+    actions = [
       "s3:Get*",
       "s3:List*",
       "s3:ReplicateObject",
@@ -156,18 +156,18 @@ data "aws_iam_policy_document" "codepipeline_bucket_policy_doc"{
       "s3:PutObjectVersionTagging",
       "s3:PutObjectTagging",
       "s3:PutObjectAcl"
-     ]
-     resources = [ 
+    ]
+    resources = [
       aws_s3_bucket.codepipeline-bucket-84543422.arn,
       "${aws_s3_bucket.codepipeline-bucket-84543422.arn}/*",
-      ]
+    ]
   }
 }
 
 resource "aws_s3_bucket_acl" "codepipeline_bucket_acl" {
-  depends_on = [ aws_s3_bucket_ownership_controls.codepipeline_bucket_controls ]
-  bucket = aws_s3_bucket.codepipeline-bucket-84543422.id
-  acl = "private"
+  depends_on = [aws_s3_bucket_ownership_controls.codepipeline_bucket_controls]
+  bucket     = aws_s3_bucket.codepipeline-bucket-84543422.id
+  acl        = "private"
 }
 
 resource "aws_s3_bucket_versioning" "codepipeline_bucket_versioning" {

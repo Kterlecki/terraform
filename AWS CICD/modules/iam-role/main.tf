@@ -16,21 +16,21 @@ resource "aws_iam_role" "codepipeline_role" {
       {
         Effect = "Allow"
         Principal = {
-            Service = "codebuild.amazonaws.com"
+          Service = "codebuild.amazonaws.com"
         },
         Action = "sts:AssumeRole"
       },
       {
         Effect = "Allow"
         Principal = {
-            Service = "ec2.amazonaws.com"
+          Service = "ec2.amazonaws.com"
         },
         Action = "sts:AssumeRole"
       },
       {
         Effect = "Allow"
         Principal = {
-            Service = "codedeploy.amazonaws.com"
+          Service = "codedeploy.amazonaws.com"
         },
         Action = "sts:AssumeRole"
       }
@@ -61,36 +61,36 @@ resource "aws_iam_policy" "codepipeline_policy" {
         Resource = "*"
       },
       {
-        Effect  = "Allow",
-        Action  = [
+        Effect = "Allow",
+        Action = [
           "s3:GetBucketVersioning"
         ],
         Resource = "*"
       },
       {
-      Effect  = "Allow",
-      Action  = [
-        "codebuild:BatchGetBuilds",
-        "codebuild:StartBuild",
-        "codebuild:BatchGetProjects"
-      ],
-      Resource  = "*"
+        Effect = "Allow",
+        Action = [
+          "codebuild:BatchGetBuilds",
+          "codebuild:StartBuild",
+          "codebuild:BatchGetProjects"
+        ],
+        Resource = "*"
       },
       {
-        Effect  = "Allow",
-        Action  = [
+        Effect = "Allow",
+        Action = [
           "codebuild:CreateReportGroup",
           "codebuild:CreateReport",
           "codebuild:UpdateReport",
           "codebuild:BatchPutTestCases"
         ],
-        Resource  = "*"
+        Resource = "*"
       }
     ]
   })
 }
 
 resource "aws_iam_role_policy_attachment" "codepipeline_role_attach" {
-  role  = aws_iam_role.codepipeline_role.name
+  role       = aws_iam_role.codepipeline_role.name
   policy_arn = aws_iam_policy.codepipeline_policy.arn
 }
