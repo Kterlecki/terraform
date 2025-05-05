@@ -1,9 +1,9 @@
 module "label" {
-    source = "../../label"
-    type        = var.type
-    project     = var.project
-    attribute   = var.attribute
-    environment = var.environment
+  source      = "../../label"
+  type        = var.type
+  project     = var.project
+  attribute   = var.attribute
+  environment = var.environment
 }
 
 module "label_ecstask" {

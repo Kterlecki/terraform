@@ -1,10 +1,10 @@
 resource "aws_ecs_service" "ecs_service" {
-  name = module.label.name
-  cluster = var.ecs_cluster_id
-  task_definition = aws_ecs_task_definition.task_definition.arn
-  desired_count = var.desired_count
+  name                 = module.label.name
+  cluster              = var.ecs_cluster_id
+  task_definition      = aws_ecs_task_definition.task_definition.arn
+  desired_count        = var.desired_count
   force_new_deployment = true
-  launch_type = "FARGATE"
+  launch_type          = "FARGATE"
 
   dynamic "load_balancer" {
     // Does not create the load balancer if the load_balancer is not specified
@@ -23,7 +23,7 @@ resource "aws_ecs_service" "ecs_service" {
     }
 
     deployment_circuit_breaker {
-      enable = true
+      enable   = true
       rollback = false
     }
   }
