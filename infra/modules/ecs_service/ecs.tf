@@ -15,6 +15,7 @@ resource "aws_ecs_service" "ecs_service" {
       container_name   = module.label_container.name
       container_port   = var.container_port
     }
+  }
 
     network_configuration {
       subnets          = var.subnet_ids
@@ -26,5 +27,4 @@ resource "aws_ecs_service" "ecs_service" {
       enable   = true
       rollback = false
     }
-  }
 }
